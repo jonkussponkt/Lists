@@ -95,6 +95,17 @@ void List::merge_lists(List & to_merge){
     }
 }
 
+void List::set_name(const std::string & new_name) {
+    name = new_name;
+}
+
+void List::clear() {
+    name.clear();
+    first = nullptr;
+    last = nullptr;
+    size = 0;
+}
+
 std::ostream & operator << (std::ostream & str, const List & list) {
     int ID = 1;
     std::shared_ptr<Product> Temp = list.first;
@@ -128,3 +139,4 @@ std::shared_ptr<Product> List::operator[](int position) {
     }
     return Temp;
 }
+

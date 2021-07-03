@@ -22,7 +22,7 @@ int Interaction::simply_get_int() {
 int Interaction::get_choice(int left_lim, int right_lim) {
     int choice;
     std::string str = get_str();
-    for(auto & i : str){
+    for(auto & i : str) {
         if(!isdigit(i))
             throw Bad_Input("Input a number!!!\n");
     }
@@ -35,12 +35,18 @@ int Interaction::get_choice(int left_lim, int right_lim) {
 
 bool Interaction::sure() {
     std::cout << "Are you sure? If so press 1, otherwise press anything\n";
-    std::string str = get_str();
+    std::string str;
+    try {
+        str = get_str();
+    }
+    catch (const Bad_Input & bad_input) {}
     return str == "1";
 }
 
 std::string Interaction::get_str() {
     std::string str;
     getline(std::cin, str);
+    if(str.empty())
+        throw Bad_Input("Name must not be empty! Type it once more!\n");
     return str;
 }
