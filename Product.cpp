@@ -4,6 +4,18 @@
 #include <iostream>
 #include "Product.h"
 
+void Product::set_quantity(int arg) {
+    quantity = arg;
+}
+
+int Product::get_quantity() const {
+    return quantity;
+}
+
+std::string Product::get_name() const {
+    return name;
+}
+
 Product::Product(const Product &product) {
     name = product.name;
     quantity = product.quantity;
@@ -22,6 +34,8 @@ Product & Product::operator=(const Product & product){
 }
 
 std::ostream & operator<<(std::ostream & str, const std::shared_ptr<Product> & product) {
-    str << product->name << " " << product->quantity << std::endl;
+    str << product->name << " ";
+    if(product->quantity > 0)
+        str << product->quantity << " " << product->unit << std::endl;
     return str;
 }

@@ -16,6 +16,7 @@ class List {
     int size;
 public:
     int get_size() const;
+    int is_in_the_list(const std::string & product) const;
     void add_new_element(Product & new_element, int position);
     void remove_from_the_list(int position);
     void merge_lists(List & to_merge);

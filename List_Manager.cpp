@@ -3,3 +3,7 @@
 //
 
 #include "List_Manager.h"
+
+int List_Manager::pick_a_list() {
+    return 0;
+}

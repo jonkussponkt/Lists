@@ -7,7 +7,7 @@
 
 #include <exception>
 
-struct Bad_Input : public std::exception{
+struct Bad_Input : public std::exception {
     std::string message{};
     const char * what() const noexcept override {
         return message.c_str();

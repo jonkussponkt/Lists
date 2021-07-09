@@ -47,6 +47,6 @@ std::string Interaction::get_str() {
     std::string str;
     getline(std::cin, str);
     if(str.empty())
-        throw Bad_Input("Name must not be empty! Type it once more!\n");
+        throw Bad_Input();
     return str;
 }
