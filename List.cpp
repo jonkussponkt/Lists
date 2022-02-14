@@ -6,8 +6,20 @@
 #include <string>
 #include "List.h"
 
+
 int List::get_size() const {
     return size;
+}
+
+bool List::full_list() const { //TODO zastapic te dwie funkcje szablonem
+    return size >= 10;
+}
+
+bool List::empty_list() const {
+    bool valid = size <= 0;
+    if (!valid)
+        throw Invalid_List();
+    return valid;
 }
 
 std::string List::get_name() const {
@@ -30,13 +42,17 @@ void List::add_new_element(Product & new_element, int position) {
     std::shared_ptr<Product> Temp;
     std::shared_ptr<Product> Temp2;
     std::shared_ptr<Product> New_Product;
+    int current_position = -1;
     if (size == 0) {
         first = std::make_shared<Product> (new_element);
         last = first;
     }
     else {
         New_Product = std::make_shared<Product> (new_element);
-        if(position == 1) {
+        current_position = is_in_the_list(New_Product->get_name());
+        if(current_position > -1)
+            this->operator[](current_position)->set_quantity(this->operator[](current_position)->get_quantity() + New_Product->get_quantity());
+        else if(position == 1) {
             Temp = first;
             first = New_Product;
             first->next = Temp;
@@ -97,6 +113,7 @@ void List::merge_lists(List & to_merge) {
             if (Temp_Guest->name == Temp->name) {
                 is = true;
                 Temp->quantity += Temp_Guest->quantity;
+                break;
             }
             Temp = Temp->next;
         }

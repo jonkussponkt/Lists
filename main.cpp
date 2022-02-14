@@ -26,10 +26,10 @@ void hello() {
                              "8 - To merge two lists\n9 - To show the chosen list\n10 - To exit the program\n";
                 choice = Interaction::get_choice(1, 10);
             }
-            catch(const Bad_Input & bad_input){
+            catch(const Bad_Input & bad_input) {
                 std::cout << bad_input.what();
             }
-            catch(const std::invalid_argument & inv_arg){
+            catch(const std::invalid_argument & inv_arg) {
                 std::cout << "Pick a number!!!!\n";
             }
         }
@@ -107,10 +107,12 @@ void hello() {
                     std::cout << "YOUR CURRENT LIST IS NR " << current_list << std::endl;
                     do {
                         try {
-                            std::cout << "How many elements (1-" << 10 - temp_number
-                                      << ") do you want to add to the list nr " << current_list << "\n";
-                            std::cout << "To go back to the main menu press 0\n";
-                            new_elements = Interaction::get_choice(0, 10 - temp_number);
+                            if(!Mother[current_list - 1].full_list()) {
+                                std::cout << "How many elements (1-" << 10 - temp_number
+                                          << ") do you want to add to the list nr " << current_list << "\n";
+                                std::cout << "To go back to the main menu press 0\n";
+                                new_elements = Interaction::get_choice(0, 10 - temp_number);
+                            }
                         }
                         catch (const Bad_Input &bad_input) {
                             std::cout << bad_input.what();
@@ -157,6 +159,8 @@ void hello() {
                             }
                             while (first_number < 1);
 
+                            //  todo nie dziala wyswietlanie jednostek
+
                             Temp = Product(name, unit, first_number);
 
                             if (temp_number == 0) {
@@ -191,7 +195,7 @@ void hello() {
                                 }
                                 else {
                                     std::cout << "You've already put this item on the list. Do you want to sum it with quantity of ";
-                                    std::cout << Temp.get_name() << " (" << Temp.get_quantity() << ")?\n";
+                                    std::cout << Temp.get_name() << " (" << Mother[current_list - 1][pos]->get_quantity() << ")?\n"; /// wyśwqietla ilośc produktu
                                     if(Interaction::sure()) {
                                         Mother[current_list - 1][pos]->set_quantity(
                                                 Mother[current_list - 1][pos]->get_quantity() + first_number);
@@ -236,50 +240,51 @@ void hello() {
                     }
                     while (first_list < 1 && first_list > temp_number);
                 }
-                if(Interaction::sure()) {
+                if(temp_number > 0 && Interaction::sure()) {
                     Mother.erase(Mother.begin() + first_list - 1);
-                    if(first_list == current_list)
+                    if (first_list == current_list)
                         current_list = -1;
                 }
                 break;
 
             case 6:
-                first_list = current_list;
-                temp_number = Mother[first_list - 1].get_size();
-                std::cout << Mother[first_list - 1];
+                if(Mother.size() > 0) {
+                    first_list = current_list;
+                    temp_number = Mother[first_list - 1].get_size();
+                    std::cout << Mother[first_list - 1];
 
-                if(temp_number == 0) {
-                    std::cout << "The list is empty\n";
-                    break;
-                }
-                else if(temp_number == 1)
-                    first_number = 1;
-                else {
-                    do {
-                        try {
-                            if (current_list > 0)
-                                std::cout << "YOUR CURRENT LIST IS NR " << current_list << std::endl;
-                            std::cout << "Input position of element you want to remove\n";
-                            first_number = Interaction::get_choice(1, temp_number);
-                        }
-                        catch (const Bad_Input &bad_input) {
-                            std::cout << bad_input.what();
-                        }
-                        catch (const std::invalid_argument &inv_arg) {
-                            std::cout << "Pick a number!!!!\n";
-                        }
+                    if (temp_number == 0) {
+                        std::cout << "The list is empty\n";
+                        break;
+                    } else if (temp_number == 1)
+                        first_number = 1;
+                    else {
+                        do {
+                            try {
+                                if (current_list > 0)
+                                    std::cout << "YOUR CURRENT LIST IS NR " << current_list << std::endl;
+                                std::cout << "Input position of element you want to remove\n";
+                                first_number = Interaction::get_choice(1, temp_number);
+                            }
+                            catch (const Bad_Input &bad_input) {
+                                std::cout << bad_input.what();
+                            }
+                            catch (const std::invalid_argument &inv_arg) {
+                                std::cout << "Pick a number!!!!\n";
+                            }
+                        } while (first_number < 1 || first_number > temp_number);
                     }
-                    while (first_number < 1 || first_number > temp_number);
+                    if (Interaction::sure()) {
+                        Mother[first_list - 1].remove_from_the_list(first_number);
+                        std::cout << "The product was successfully removed\n";
+                    }
                 }
-                if(Interaction::sure()) {
-                    Mother[first_list - 1].remove_from_the_list(first_number);
-                    std::cout << "The product was successfully removed\n";
-                }
+                else
+                    std::cout << "You have not created any list\n";
                 break;
 
             case 7:
-                temp_number = Mother.size();
-                if(temp_number < 2) {
+                if(Mother.size() < 2) {
                     std::cout << "To move products between lists you have to create at least two lists\n";
                     break;
                 }
@@ -330,29 +335,36 @@ void hello() {
                         }
                         while (second_list < 1 || second_list > temp_number || second_list == first_list);
 
-                        temp_number = Mother.size();
-                        if (temp_number == 0)
-                            second_number = 1;
-                        else if (temp_number == 1)
-                            second_number = 2;
-                        do {
-                            try {
-                                std::cout << "Input position of the product on the list nr " << second_list;
-                                std::cout << std::endl << Mother[second_list - 1];
-                                second_number = Interaction::get_choice(1, temp_number + 1);
+                        temp_number = Mother[second_list - 1].get_size();
+                        int current_position = Mother[second_list - 1].is_in_the_list(Temp.get_name());
+
+                        if(current_position == -1) {
+                            if (temp_number == 0)
+                                second_number = 1;
+                            else if (temp_number == 1)
+                                second_number = 2;
+                            do {
+                                try {
+                                    std::cout << "Input position of the product on the list nr " << second_list;
+                                    std::cout << std::endl << Mother[second_list - 1];
+                                    second_number = Interaction::get_choice(1, temp_number + 1);
+                                }
+                                catch (const Bad_Input &bad_input) {
+                                    std::cout << bad_input.what();
+                                }
+                                catch (const std::invalid_argument &inv_arg) {
+                                    std::cout << "Pick a number!!!!\n";
+                                }
                             }
-                            catch (const Bad_Input &bad_input) {
-                                std::cout << bad_input.what();
-                            }
-                            catch (const std::invalid_argument &inv_arg) {
-                                std::cout << "Pick a number!!!!\n";
-                            }
+                            while (second_number < 1 || second_number > temp_number);
                         }
-                        while (second_list < 1 || second_list > temp_number);
 
                         if(Interaction::sure()) {
+                            if(current_position > -1)
+                                Mother[second_list - 1][current_position]->set_quantity(Mother[second_list - 1][current_position]->get_quantity()+Temp.get_quantity());
+                            else
+                                Mother[second_list - 1].add_new_element(Temp, second_number);
                             Mother[first_list - 1].remove_from_the_list(first_number);
-                            Mother[second_list - 1].add_new_element(Temp, second_number);
                             std::cout << "The product was successfully moved\n";
                         }
                     }
@@ -394,9 +406,10 @@ void hello() {
                 }
                 while(second_list < 1 || second_list > temp_number || second_list == first_list);
 
-                std::cout << "Second list " << Mother.at(second_list - 1).get_name() << " will be deleted after merging\n";
+                std::cout << "Second list \"" << Mother.at(second_list - 1).get_name() << "\" will be deleted after merging\n";
                 if(Interaction::sure()) {
-                    Mother[first_list - 1].merge_lists(Mother[second_list - 1]);
+                    if(!Mother[second_list - 1].empty_list())
+                        Mother[first_list - 1].merge_lists(Mother[second_list - 1]);
                     Mother.erase(Mother.begin() + second_list - 1);
                     current_list = second_list - 1;
                 }

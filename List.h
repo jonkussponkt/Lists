@@ -8,6 +8,7 @@
 #include <string>
 #include <memory>
 #include "Product.h"
+#include "Interaction.h"
 
 class List {
     std::string name;
@@ -16,6 +17,8 @@ class List {
     int size;
 public:
     int get_size() const;
+    bool full_list() const;
+    bool empty_list() const;
     int is_in_the_list(const std::string & product) const;
     void add_new_element(Product & new_element, int position);
     void remove_from_the_list(int position);
