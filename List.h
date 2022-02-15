@@ -7,6 +7,7 @@
 
 #include <string>
 #include <memory>
+#include <fstream>
 #include "Product.h"
 #include "Interaction.h"
 
@@ -18,18 +19,20 @@ class List {
 public:
     int get_size() const;
     bool full_list() const;
-    bool empty_list() const;
+    bool not_empty_list() const;
     int is_in_the_list(const std::string & product) const;
     void add_new_element(Product & new_element, int position);
     void remove_from_the_list(int position);
     void merge_lists(List & to_merge);
     void set_name(const std::string & new_name);
     void clear();
+    void save_list(const std::string & name) const;
     std::string get_name() const;
     std::shared_ptr<Product> operator [] (int position);
     explicit List(std::string new_name = "", int number = 0) : name(std::move(new_name)), size(number){
         first = nullptr;
         last = nullptr;
+        size = 0;
     }
     ~List() = default;
 

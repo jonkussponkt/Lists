@@ -11,12 +11,12 @@ int List::get_size() const {
     return size;
 }
 
-bool List::full_list() const { //TODO zastapic te dwie funkcje szablonem
+bool List::full_list() const {
     return size >= 10;
 }
 
-bool List::empty_list() const {
-    bool valid = size <= 0;
+bool List::not_empty_list() const {
+    bool valid = size > 0;
     if (!valid)
         throw Invalid_List();
     return valid;
@@ -106,6 +106,7 @@ void List::merge_lists(List & to_merge) {
     bool is;
     std::shared_ptr<Product> Temp;
     std::shared_ptr<Product> Temp_Guest = to_merge.first;
+    //if(!this->not_empty_list() && !to_merge.not_empty_list())
     while(Temp_Guest) {
         is = false;
         Temp = first;
@@ -133,6 +134,18 @@ void List::clear() {
     first = nullptr;
     last = nullptr;
     size = 0;
+}
+
+void List::save_list(const std::string & name) const {
+    try {
+        if (not_empty_list()) {
+            std::fstream file_holder;
+
+        }
+    }
+    catch(const Invalid_List & invalid_list) {
+        std::cout << invalid_list.what();
+    }
 }
 
 std::ostream & operator << (std::ostream & str, const List & list) {
@@ -168,4 +181,3 @@ std::shared_ptr<Product> List::operator[](int position) {
     }
     return Temp;
 }
-
