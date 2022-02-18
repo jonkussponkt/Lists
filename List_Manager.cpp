@@ -7,21 +7,52 @@
 int List_Manager::current_list = -1;
 std::vector<List> List_Manager::Mother;
 
+void List_Manager::fill_the_vector() {
+    std::vector<std::string> files;
+    std::fstream file_holder("register.txt");
+    List Temp_List;
+    if(!file_holder)
+        std::cout << "Bad file!";
+    else {
+        if(file_holder) {
+            std::string element;
+            int lines = 0;
+            while(std::getline(file_holder, element)) {
+                files.push_back(element);
+                if(lines == 0 && element.empty())
+                    break;
+                lines++;
+            }
+            file_holder.close();
+            if(lines > 0) {
+                for (auto &i: files) {
+                    Temp_List = List(i);
+                    Temp_List.read_list(i);
+                    Mother.push_back(Temp_List);
+                }
+            }
+        }
+        else {
+            std::cout << "Bad\n";
+        }
+    }
+}
+
 void List_Manager::pick_a_list() {
-    int ID = 1;
-    int chosen_list = -1;
-    for(auto & i : Mother) {
-        std::cout << ID << " " << i.get_name() << std::endl;
-        ID++;
-    }
-    if(Mother.empty()) {
+    int ID = 1, chosen_list = -1;
+    std::string element;
+    if(Mother.empty())
         throw Invalid_List("You have not created any list. Choose once more.");
-    }
     else if(Mother.size() == 1)
         current_list = 1;
     else {
         try {
             do {
+                for(auto & i : Mother) {
+                    std::cout << ID << " " << i.get_name() << std::endl;
+                    ID++;
+                }
+
                 std::cout << "Pick ID number of list:\n";
                 chosen_list = Interaction::get_choice(1, Mother.size());
             }
@@ -33,8 +64,21 @@ void List_Manager::pick_a_list() {
         catch (const std::invalid_argument & inv_arg){
             std::cout << "Pick a number!!!!\n";
         }
+//        if(ID >= Mother.size()) {
+//            std::string new_name = File_Mother[ID - Mother.size() - 1];
+//            List Temp_List = List(new_name);
+//            Temp_List.read_list(new_name);
+//            Mother.push_back(Temp_List);
+//        }
         current_list = chosen_list;
     }
+}
+
+bool List_Manager::validate_name(const std::string &new_name) {
+    for(auto & i : Mother)
+        if(i.get_name() == new_name)
+            return false;
+    return true;
 }
 
 void List_Manager::add_new_list() {
@@ -43,20 +87,23 @@ void List_Manager::add_new_list() {
         std::cout << "YOUR CURRENT LIST IS NR " << current_list << " " << Mother[current_list - 1].get_name() << std::endl;
     else
         std::cout << "You have not created any list\n";
-    std::cout << "Input name of the list\n";
-    while(name.empty()) {
-        try {
-            name = Interaction::get_str();
+    if(Mother.size() < 10) {
+        std::cout << "Input name of the list\n";
+        while (name.empty() && !validate_name(name)) {
+            try {
+                name = Interaction::get_str();
+            }
+            catch (const Bad_Input &bad_input) {
+                std::cout << bad_input.what();
+            }
         }
-        catch (const Bad_Input &bad_input) {
-            std::cout << bad_input.what();
-        }
+        List Temp_List = List(name);
+        Mother.push_back(Temp_List);
+        current_list = Mother.size();
+        name.clear();
     }
-    List Temp_List = List(name);
-    Mother.push_back(Temp_List);
-    current_list = Mother.size();
-
-    name.clear();
+    else
+        std::cout << "You cannot have more than 10 lists! Delete anything\n";
 }
 
 void List_Manager::rename_current_list() {
@@ -82,7 +129,6 @@ void List_Manager::add_new_elements() {
     int list_size, new_elements = -1, element;
     std::string name;
     if(current_list > 0) {
-
         list_size = Mother[current_list - 1].get_size();
         std::cout << "YOUR CURRENT LIST IS NR " << current_list << std::endl;
         do {
@@ -112,9 +158,7 @@ void List_Manager::add_new_elements() {
                 try {
                     name = Interaction::get_str();
                 }
-                catch (const Bad_Input & bad_input) {
-
-                }
+                catch (const Bad_Input & bad_input) {}
 
                 if (!name.empty()) {
 
@@ -261,6 +305,7 @@ void List_Manager::delete_element() {
     else
         std::cout << "You have not created any list\n";
 }
+
 
 void List_Manager::move_between_lists() {
     if(Mother.size() < 2) {
@@ -425,4 +470,9 @@ void List_Manager::show_list() {
         while (first_list < 1 || first_list > mother_size);
     }
     std::cout << Mother[first_list - 1];
+}
+
+void List_Manager::save_all() {
+    for (auto & i: Mother)
+        i.save_list();
 }

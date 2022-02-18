@@ -25,8 +25,8 @@ public:
     void remove_from_the_list(int position);
     void merge_lists(List & to_merge);
     void set_name(const std::string & new_name);
-    void clear();
-    void save_list(const std::string & name) const;
+    void save_list() const;
+    void read_list(const std::string & list_name);
     std::string get_name() const;
     std::shared_ptr<Product> operator [] (int position);
     explicit List(std::string new_name = "", int number = 0) : name(std::move(new_name)), size(number){
@@ -35,7 +35,6 @@ public:
         size = 0;
     }
     ~List() = default;
-
     friend std::ostream & operator << (std::ostream & str, const List & list);
 };
 

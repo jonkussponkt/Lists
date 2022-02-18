@@ -8,7 +8,9 @@ void hello() {
     int current_list = -1;
     Product Temp = Product("",0);
     List Temp_List;
+
     std::string name, unit;
+    List_Manager::fill_the_vector();
     do {
         choice = -1;
         do {
@@ -34,7 +36,7 @@ void hello() {
 
         switch(choice) {
             case 1:
-                try{
+                try {
                     List_Manager::pick_a_list();
                 }
                 catch(const Invalid_List & invalid_list) {
@@ -89,8 +91,10 @@ void hello() {
                 }
                 break;
             case 10:
-                if(Interaction::sure())
+                if(Interaction::sure()) {
+                    List_Manager::save_all();
                     choice = -1;
+                }
                 break;
             default:
                 break;

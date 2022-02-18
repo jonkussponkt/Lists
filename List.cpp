@@ -129,22 +129,46 @@ void List::set_name(const std::string & new_name) {
     name = new_name;
 }
 
-void List::clear() {
-    name.clear();
-    first = nullptr;
-    last = nullptr;
-    size = 0;
-}
-
-void List::save_list(const std::string & name) const {
+void List::save_list() const {
     try {
-        if (not_empty_list()) {
+        if (not_empty_list()) {  //only to throw an exception if empty
             std::fstream file_holder;
-
+            file_holder.open(this->name + ".txt", std::ios::out);
+            if(!file_holder)
+                std::cout << "Bad file!";
+            else {
+                std::shared_ptr<Product> Temp = first;
+                while(Temp) {
+                    file_holder << Temp->get_name() << " " << Temp->get_quantity() << "\n";
+                    Temp=Temp->next;
+                }
+                file_holder.close();
+            }
         }
     }
-    catch(const Invalid_List & invalid_list) {
-        std::cout << invalid_list.what();
+    catch(const Invalid_List & invalid_list) {}
+}
+
+void List::read_list(const std::string & list_name) {
+    std::fstream file_holder(list_name + ".txt");
+    if(!file_holder)
+        std::cout << "Bad file!\n";
+    else {
+        int first_space, second_space, prod_quantity;
+        std::string element, prod_name, prod_unit;
+        Product product = Product("", 0);
+        int counter = 1;
+        while(std::getline(file_holder,element)) {
+            first_space = element.find_first_of('\n', 0);
+            second_space = element.find_first_of('\n', first_space);
+            prod_name = element.substr(0, first_space);
+            prod_quantity = std::stoi(element.substr(first_space + 1, second_space));
+            prod_unit = element.substr(second_space + 1, element.length());
+            product = Product(prod_name, prod_unit, prod_quantity);
+            add_new_element(product, counter);
+            counter++;
+        }
+        file_holder.close();
     }
 }
 
@@ -181,3 +205,4 @@ std::shared_ptr<Product> List::operator[](int position) {
     }
     return Temp;
 }
+

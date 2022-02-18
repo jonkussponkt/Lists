@@ -9,8 +9,8 @@
 #include <memory>
 
 struct Product {
-    std::string name;
     int quantity;
+    std::string name;
     std::string unit;
     std::shared_ptr<Product> previous;
     std::shared_ptr<Product> next;
