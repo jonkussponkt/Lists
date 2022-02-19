@@ -133,13 +133,13 @@ void List::save_list() const {
     try {
         if (not_empty_list()) {  //only to throw an exception if empty
             std::fstream file_holder;
-            file_holder.open(this->name + ".txt", std::ios::out);
+            file_holder.open(this->name + ".txt", std::ios::out | std::ios::trunc);
             if(!file_holder)
                 std::cout << "Bad file!";
             else {
                 std::shared_ptr<Product> Temp = first;
                 while(Temp) {
-                    file_holder << Temp->get_name() << " " << Temp->get_quantity() << "\n";
+                    file_holder << Temp->get_name() << "," << Temp->get_quantity() << "," << Temp->get_unit() << "\n";
                     Temp=Temp->next;
                 }
                 file_holder.close();
@@ -154,16 +154,16 @@ void List::read_list(const std::string & list_name) {
     if(!file_holder)
         std::cout << "Bad file!\n";
     else {
-        int first_space, second_space, prod_quantity;
+        int first_char, second_char, prod_quantity;
         std::string element, prod_name, prod_unit;
         Product product = Product("", 0);
         int counter = 1;
         while(std::getline(file_holder,element)) {
-            first_space = element.find_first_of('\n', 0);
-            second_space = element.find_first_of('\n', first_space);
-            prod_name = element.substr(0, first_space);
-            prod_quantity = std::stoi(element.substr(first_space + 1, second_space));
-            prod_unit = element.substr(second_space + 1, element.length());
+            first_char = element.find_first_of(',', 0);
+            second_char = element.find_first_of(',', first_char);
+            prod_name = element.substr(0, first_char);
+            prod_quantity = std::stoi(element.substr(first_char + 1, second_char));
+            prod_unit = element.substr(second_char + 1, element.length());
             product = Product(prod_name, prod_unit, prod_quantity);
             add_new_element(product, counter);
             counter++;

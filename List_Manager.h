@@ -10,10 +10,11 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <cstring>
 
 class List_Manager {
     static int current_list;
-    static int first_saved_list;
+    static std::vector<std::string> files;
     static std::vector<List>Mother;
 public:
     static void fill_the_vector();

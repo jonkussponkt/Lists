@@ -16,6 +16,10 @@ std::string Product::get_name() const {
     return name;
 }
 
+std::string Product::get_unit() const {
+    return unit;
+}
+
 Product::Product(const Product &product) {
     name = product.name;
     quantity = product.quantity;

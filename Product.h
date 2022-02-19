@@ -19,6 +19,7 @@ public:
     void set_quantity(int arg);
     int get_quantity() const;
     std::string get_name() const;
+    std::string get_unit() const;
     Product(const Product & product);
     Product & operator=(const Product & product);
     explicit Product(std::string str = "", int number = 0) : name(std::move(str)), quantity(number) {

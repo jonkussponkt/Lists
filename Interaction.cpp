@@ -27,9 +27,8 @@ int Interaction::get_choice(int left_lim, int right_lim) {
             throw Bad_Input("Input a number!!!\n");
     }
     choice = std::stoi(str);
-    if(choice < left_lim || choice > right_lim){
+    if(choice < left_lim || choice > right_lim)
         throw Bad_Input();
-    }
     return choice;
 }
 

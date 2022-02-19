@@ -15,9 +15,9 @@ void hello() {
         choice = -1;
         do {
             try {
-                if (current_list > 0) {
+                if (current_list > 0)
                     std::cout << "YOUR CURRENT LIST IS NR " << current_list << std::endl;
-                }
+
                 std::cout << "Input your choice!\n1 - To pick a list\n2 - To add a new list\n"
                              "3 - To rename the current list\n4 - To add new elements to currently chosen list\n"
                              "5 - To delete whole list\n6 - To delete element from a currently chosen list\n"
