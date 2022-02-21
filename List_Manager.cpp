@@ -142,7 +142,7 @@ void List_Manager::rename_current_list() {
 void List_Manager::add_new_elements() {
     int list_size, new_elements = -1, element;
     std::string name;
-    if(current_list > 0) {
+    if(current_list > 0 && !Mother[current_list - 1].full_list()) {
         list_size = Mother[current_list - 1].get_size();
         std::cout << "YOUR CURRENT LIST IS NR " << current_list << std::endl;
         do {
@@ -245,6 +245,8 @@ void List_Manager::add_new_elements() {
             }
         }
     }
+    else if(Mother[current_list - 1].full_list())
+        std::cout << "The list is full\n";
     else
         std::cout << "You have not created any list\n";
 }
@@ -413,8 +415,7 @@ void List_Manager::move_between_lists() {
 }
 
 void List_Manager::merge_two_lists() {
-    int mother_size = Mother.size();
-    int first_list, second_list = -1;
+    int mother_size = Mother.size(), first_list, second_list = -1;
     if(mother_size < 2)
         throw std::range_error("To merge lists you have to create at least two lists\n");
     do {
@@ -439,8 +440,10 @@ void List_Manager::merge_two_lists() {
         mother_size = Mother.size();
         try {
             std::cout << "Input number of second list\n";
-            for(int i = 0; i < mother_size; i++)
-                std::cout << i + 1 << " " << Mother.at(i).get_name() << std::endl;
+            for(int i = 0; i < mother_size; i++) {
+                if(i != first_list - 1)
+                    std::cout << i + 1 << " " << Mother.at(i).get_name() << std::endl;
+            }
             second_list = Interaction::get_choice(1, mother_size);
         }
         catch (const Bad_Input & bad_input){
@@ -455,11 +458,28 @@ void List_Manager::merge_two_lists() {
     try {
         if (Mother[first_list - 1].not_empty_list() && Mother[second_list - 1].not_empty_list()) {
             if (Interaction::sure()) {
-                Mother[first_list - 1].merge_lists(Mother[second_list - 1]);
-                remove((Mother[second_list - 1].get_name() + ".txt").c_str());
-                if(std::find(files.cbegin(), files.cend(), Mother[second_list - 1].get_name()) != files.end())  //po to aby nie było segfault
-                    files.erase(std::find(files.cbegin(), files.cend(), Mother[second_list - 1].get_name()));
-                Mother.erase(Mother.begin() + second_list - 1);
+                if(Mother[first_list - 1].get_size() + Mother[second_list - 1].get_size() <= 10) {
+                    Mother[first_list - 1].merge_lists(Mother[second_list - 1]);
+                    remove((Mother[second_list - 1].get_name() + ".txt").c_str());
+                    if (std::find(files.cbegin(), files.cend(), Mother[second_list - 1].get_name()) !=
+                        files.end())  //po to aby nie było segfault
+                        files.erase(std::find(files.cbegin(), files.cend(), Mother[second_list - 1].get_name()));
+                    Mother.erase(Mother.begin() + second_list - 1);
+                }
+                else {
+                    while(Mother[first_list - 1].get_size() <  10) {
+                        Mother[first_list - 1].add_new_element(*Mother[second_list - 1][0], Mother[first_list - 1].get_size() + 1);
+                        Mother[second_list - 1].remove_from_the_list(1);
+                    }
+                    try {
+                        if(!Mother[second_list - 1].not_empty_list()) {
+                            if (std::find(files.cbegin(), files.cend(), Mother[second_list - 1].get_name()) !=
+                                files.end())  //po to aby nie było segfault
+                                files.erase(std::find(files.cbegin(), files.cend(), Mother[second_list - 1].get_name()));
+                        }
+                    }
+                    catch(const Invalid_List & invalid_list) {}
+                }
             }
         }
         current_list = 1;
