@@ -10,7 +10,7 @@ void hello() {
     List Temp_List;
 
     std::string name, unit;
-    List_Manager::fill_the_vector();
+    List_Manager::fill_the_vector();  ///puts into memory previously saved lists if they exist
     do {
         choice = -1;
         do {
@@ -34,7 +34,7 @@ void hello() {
         }
         while(choice < 1 || choice > 10);
 
-        switch(choice) {
+        switch(choice) {   ///MAIN MENU
             case 1:
                 try {
                     List_Manager::pick_a_list();
